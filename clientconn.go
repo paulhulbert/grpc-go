@@ -63,7 +63,7 @@ var (
 	//
 	// Deprecated: this error should not be relied upon by users; use the status
 	// code of Canceled instead.
-	ErrClientConnClosing = status.Error(codes.Canceled, "grpc: the client connection is closing")
+	ErrClientConnClosing = status.Error(codes.Canceled, "grpc: the client connection is closing hello hello hello hello")
 	// errConnDrain indicates that the connection starts to be drained and does not accept any new RPCs.
 	errConnDrain = errors.New("grpc: the connection is drained")
 	// errConnClosing indicates that the connection is closing.
