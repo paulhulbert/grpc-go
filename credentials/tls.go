@@ -23,11 +23,10 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"google.golang.org/grpc/credentials/internal"
 	"io/ioutil"
 	"net"
 	"os"
-
-	"google.golang.org/grpc/credentials/internal"
 )
 
 // TLSInfo contains the auth information for a TLS authenticated connection.
@@ -108,7 +107,7 @@ func (c *tlsCreds) ServerHandshake(rawConn net.Conn) (net.Conn, AuthInfo, error)
 }
 
 func (c *tlsCreds) Clone() TransportCredentials {
-	return NewTLS(c.config, "Clone")
+	return NewTLS(c.config)
 }
 
 func (c *tlsCreds) OverrideServerName(serverNameOverride string) error {
@@ -130,12 +129,7 @@ func appendH2ToNextProtos(ps []string) []string {
 }
 
 // NewTLS uses c to construct a TransportCredentials based on TLS.
-func NewTLS(c *tls.Config, name string) TransportCredentials {
-	w, err := os.OpenFile(fmt.Sprintf("/vt/tmp/keyfile-%s.txt", name), os.O_WRONLY|os.O_CREATE, 0600)
-	if err != nil {
-		return nil
-	}
-	c.KeyLogWriter = w
+func NewTLS(c *tls.Config) TransportCredentials {
 	tc := &tlsCreds{cloneTLSConfig(c)}
 	tc.config.NextProtos = appendH2ToNextProtos(tc.config.NextProtos)
 	return tc
@@ -145,7 +139,11 @@ func NewTLS(c *tls.Config, name string) TransportCredentials {
 // serverNameOverride is for testing only. If set to a non empty string,
 // it will override the virtual host name of authority (e.g. :authority header field) in requests.
 func NewClientTLSFromCert(cp *x509.CertPool, serverNameOverride string) TransportCredentials {
-	return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp},"NewClientTLSFromCert")
+	w, err := os.OpenFile(fmt.Sprintf("/vt/tmp/keyfile-%s.txt", "NewClientTLSFromCert"), os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return nil
+	}
+	return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp, KeyLogWriter: w})
 }
 
 // NewClientTLSFromFile constructs TLS credentials from the input certificate file for client.
@@ -160,12 +158,20 @@ func NewClientTLSFromFile(certFile, serverNameOverride string) (TransportCredent
 	if !cp.AppendCertsFromPEM(b) {
 		return nil, fmt.Errorf("credentials: failed to append certificates")
 	}
-	return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp}, "NewClientTLSFromFile"), nil
+	w, err := os.OpenFile(fmt.Sprintf("/vt/tmp/keyfile-%s.txt", "NewClientTLSFromFile"), os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return nil, err
+	}
+	return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp, KeyLogWriter: w}), nil
 }
 
 // NewServerTLSFromCert constructs TLS credentials from the input certificate for server.
 func NewServerTLSFromCert(cert *tls.Certificate) TransportCredentials {
-	return NewTLS(&tls.Config{Certificates: []tls.Certificate{*cert}}, "NewServerTLSFromCert")
+	w, err := os.OpenFile(fmt.Sprintf("/vt/tmp/keyfile-%s.txt", "NewServerTLSFromCert"), os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return nil
+	}
+	return NewTLS(&tls.Config{Certificates: []tls.Certificate{*cert}, KeyLogWriter: w})
 }
 
 // NewServerTLSFromFile constructs TLS credentials from the input certificate file and key
@@ -175,7 +181,11 @@ func NewServerTLSFromFile(certFile, keyFile string) (TransportCredentials, error
 	if err != nil {
 		return nil, err
 	}
-	return NewTLS(&tls.Config{Certificates: []tls.Certificate{cert}}, "NewServerTLSFromFile"), nil
+	w, err := os.OpenFile(fmt.Sprintf("/vt/tmp/keyfile-%s.txt", "NewServerTLSFromFile"), os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		return nil, err
+	}
+	return NewTLS(&tls.Config{Certificates: []tls.Certificate{cert}, KeyLogWriter: w}), nil
 }
 
 // TLSChannelzSecurityValue defines the struct that TLS protocol should return
