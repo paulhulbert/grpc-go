@@ -20,6 +20,8 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 )
 
 // Invoke sends the RPC request on the wire and returns after response is
@@ -27,6 +29,16 @@ import (
 //
 // All errors returned by Invoke are compatible with the status package.
 func (cc *ClientConn) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...CallOption) error {
+	s, _ := json.MarshalIndent(ctx, "", "\t")
+	fmt.Printf("Paul - call.go:33 - Invoke - ctx: %v", s)
+	s, _ = json.MarshalIndent(method, "", "\t")
+	fmt.Printf("Paul - call.go:35 - Invoke - method: %v", s)
+	s, _ = json.MarshalIndent(args, "", "\t")
+	fmt.Printf("Paul - call.go:37 - Invoke - args: %v", s)
+	s, _ = json.MarshalIndent(reply, "", "\t")
+	fmt.Printf("Paul - call.go:39 - Invoke - reply: %v", s)
+	s, _ = json.MarshalIndent(opts, "", "\t")
+	fmt.Printf("Paul - call.go:41 - Invoke - opts: %v", s)
 	// allow interceptor to see all applicable call options, which means those
 	// configured as defaults from dial option as well as per-call options
 	opts = combine(cc.dopts.callOptions, opts)
@@ -63,6 +75,18 @@ func Invoke(ctx context.Context, method string, args, reply interface{}, cc *Cli
 var unaryStreamDesc = &StreamDesc{ServerStreams: false, ClientStreams: false}
 
 func invoke(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, opts ...CallOption) error {
+	s, _ := json.MarshalIndent(ctx, "", "\t")
+	fmt.Printf("Paul - call.go:79 - invoke - ctx: %v", s)
+	s, _ = json.MarshalIndent(method, "", "\t")
+	fmt.Printf("Paul - call.go:81 - invoke - method: %v", s)
+	s, _ = json.MarshalIndent(req, "", "\t")
+	fmt.Printf("Paul - call.go:83 - invoke - req: %v", s)
+	s, _ = json.MarshalIndent(reply, "", "\t")
+	fmt.Printf("Paul - call.go:85 - invoke - reply: %v", s)
+	s, _ = json.MarshalIndent(cc, "", "\t")
+	fmt.Printf("Paul - call.go:87 - invoke - cc: %v", s)
+	s, _ = json.MarshalIndent(opts, "", "\t")
+	fmt.Printf("Paul - call.go:89 - invoke - opts: %v", s)
 	cs, err := newClientStream(ctx, unaryStreamDesc, cc, method, opts...)
 	if err != nil {
 		return err
