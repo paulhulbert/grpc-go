@@ -138,6 +138,7 @@ func (pw *pickerWrapper) pick(ctx context.Context, failfast bool, info balancer.
 		pw.mu.Lock()
 		if pw.done {
 			pw.mu.Unlock()
+			fmt.Print("picker_wrapper 1")
 			return nil, nil, ErrClientConnClosing
 		}
 

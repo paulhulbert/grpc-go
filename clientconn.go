@@ -554,6 +554,7 @@ func (cc *ClientConn) waitForResolvedAddrs(ctx context.Context) error {
 	case <-ctx.Done():
 		return status.FromContextError(ctx.Err()).Err()
 	case <-cc.ctx.Done():
+		fmt.Printf("waitForResolvedAddrs: %+v\\n", cc.ctx)
 		return ErrClientConnClosing
 	}
 }
@@ -732,6 +733,7 @@ func (cc *ClientConn) newAddrConn(addrs []resolver.Address, opts balancer.NewSub
 	cc.mu.Lock()
 	if cc.conns == nil {
 		cc.mu.Unlock()
+		fmt.Print("newAddrConn")
 		return nil, ErrClientConnClosing
 	}
 	if channelz.IsOn() {
@@ -990,6 +992,7 @@ func (cc *ClientConn) Close() error {
 	cc.mu.Lock()
 	if cc.conns == nil {
 		cc.mu.Unlock()
+		fmt.Printf("Close 1: %+v\n", cc)
 		return ErrClientConnClosing
 	}
 	conns := cc.conns
@@ -1012,6 +1015,7 @@ func (cc *ClientConn) Close() error {
 	}
 
 	for ac := range conns {
+		fmt.Printf("Close 2: %+v\n", cc)
 		ac.tearDown(ErrClientConnClosing)
 	}
 	if channelz.IsOn() {

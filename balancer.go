@@ -20,6 +20,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"sync"
 
@@ -186,6 +187,7 @@ func (rr *roundRobin) watchAddrUpdates() error {
 		open[i] = v.addr
 	}
 	if rr.done {
+		fmt.Print("balancer 1")
 		return ErrClientConnClosing
 	}
 	select {
@@ -200,6 +202,7 @@ func (rr *roundRobin) Start(target string, config BalancerConfig) error {
 	rr.mu.Lock()
 	defer rr.mu.Unlock()
 	if rr.done {
+		fmt.Print("balancer 2")
 		return ErrClientConnClosing
 	}
 	if rr.r == nil {
@@ -270,6 +273,7 @@ func (rr *roundRobin) Get(ctx context.Context, opts BalancerGetOptions) (addr Ad
 	rr.mu.Lock()
 	if rr.done {
 		rr.mu.Unlock()
+		fmt.Print("balancer 3")
 		err = ErrClientConnClosing
 		return
 	}
@@ -323,6 +327,7 @@ func (rr *roundRobin) Get(ctx context.Context, opts BalancerGetOptions) (addr Ad
 			rr.mu.Lock()
 			if rr.done {
 				rr.mu.Unlock()
+				fmt.Print("balancer 4")
 				err = ErrClientConnClosing
 				return
 			}

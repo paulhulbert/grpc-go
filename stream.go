@@ -21,6 +21,7 @@ package grpc
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"strconv"
@@ -318,6 +319,7 @@ func newClientStream(ctx context.Context, desc *StreamDesc, cc *ClientConn, meth
 		go func() {
 			select {
 			case <-cc.ctx.Done():
+				fmt.Printf("stream 1: %+v\n", cc)
 				cs.finish(ErrClientConnClosing)
 			case <-ctx.Done():
 				cs.finish(toRPCErr(ctx.Err()))
