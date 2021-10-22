@@ -105,9 +105,9 @@ const (
 // Dial creates a client connection to the given target.
 func Dial(target string, opts ...DialOption) (*ClientConn, error) {
 	s, _ := json.MarshalIndent(target, "", "\t")
-	fmt.Printf("Paul - clientconn.go:108 - Dial - target: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:108 - Dial - target: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(opts, "", "\t")
-	fmt.Printf("Paul - clientconn.go:110 - Dial - opts: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:110 - Dial - opts: %v\n", time.Now().String(), string(s))
 	return DialContext(context.Background(), target, opts...)
 }
 
@@ -129,9 +129,9 @@ func Dial(target string, opts ...DialOption) (*ClientConn, error) {
 // e.g. to use dns resolver, a "dns:///" prefix should be applied to the target.
 func DialContext(ctx context.Context, target string, opts ...DialOption) (conn *ClientConn, err error) {
 	s, _ := json.MarshalIndent(target, "", "\t")
-	fmt.Printf("Paul - clientconn.go:132 - DialContext - target: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:132 - DialContext - target: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(opts, "", "\t")
-	fmt.Printf("Paul - clientconn.go:134 - DialContext - opts: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:134 - DialContext - opts: %v\n", time.Now().String(), string(s))
 	cc := &ClientConn{
 		target:            target,
 		csMgr:             &connectivityStateManager{},
@@ -344,7 +344,7 @@ func DialContext(ctx context.Context, target string, opts ...DialOption) (conn *
 // chainUnaryClientInterceptors chains all unary client interceptors into one.
 func chainUnaryClientInterceptors(cc *ClientConn) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:347 - chainUnaryClientInterceptors - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:347 - chainUnaryClientInterceptors - cc: %v\n", time.Now().String(), string(s))
 	interceptors := cc.dopts.chainUnaryInts
 	// Prepend dopts.unaryInt to the chaining interceptors if it exists, since unaryInt will
 	// be executed before any other chained interceptors.
@@ -367,11 +367,11 @@ func chainUnaryClientInterceptors(cc *ClientConn) {
 // getChainUnaryInvoker recursively generate the chained unary invoker.
 func getChainUnaryInvoker(interceptors []UnaryClientInterceptor, curr int, finalInvoker UnaryInvoker) UnaryInvoker {
 	s, _ := json.MarshalIndent(interceptors, "", "\t")
-	fmt.Printf("Paul - clientconn.go:108 - getChainUnaryInvoker - interceptors: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:108 - getChainUnaryInvoker - interceptors: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(curr, "", "\t")
-	fmt.Printf("Paul - clientconn.go:110 - getChainUnaryInvoker - curr: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:110 - getChainUnaryInvoker - curr: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(finalInvoker, "", "\t")
-	fmt.Printf("Paul - clientconn.go:110 - getChainUnaryInvoker - finalInvoker: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:110 - getChainUnaryInvoker - finalInvoker: %v\n", time.Now().String(), string(s))
 	if curr == len(interceptors)-1 {
 		return finalInvoker
 	}
@@ -383,7 +383,7 @@ func getChainUnaryInvoker(interceptors []UnaryClientInterceptor, curr int, final
 // chainStreamClientInterceptors chains all stream client interceptors into one.
 func chainStreamClientInterceptors(cc *ClientConn) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:386 - chainStreamClientInterceptors - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:386 - chainStreamClientInterceptors - cc: %v\n", time.Now().String(), string(s))
 	interceptors := cc.dopts.chainStreamInts
 	// Prepend dopts.streamInt to the chaining interceptors if it exists, since streamInt will
 	// be executed before any other chained interceptors.
@@ -406,11 +406,11 @@ func chainStreamClientInterceptors(cc *ClientConn) {
 // getChainStreamer recursively generate the chained client stream constructor.
 func getChainStreamer(interceptors []StreamClientInterceptor, curr int, finalStreamer Streamer) Streamer {
 	s, _ := json.MarshalIndent(interceptors, "", "\t")
-	fmt.Printf("Paul - clientconn.go:409 - getChainStreamer - interceptors: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:409 - getChainStreamer - interceptors: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(curr, "", "\t")
-	fmt.Printf("Paul - clientconn.go:411 - getChainStreamer - curr: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:411 - getChainStreamer - curr: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(finalStreamer, "", "\t")
-	fmt.Printf("Paul - clientconn.go:413 - getChainStreamer - finalStreamer: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:413 - getChainStreamer - finalStreamer: %v\n", time.Now().String(), string(s))
 	if curr == len(interceptors)-1 {
 		return finalStreamer
 	}
@@ -433,7 +433,7 @@ type connectivityStateManager struct {
 // happen.
 func (csm *connectivityStateManager) updateState(state connectivity.State) {
 	s, _ := json.MarshalIndent(csm, "", "\t")
-	fmt.Printf("Paul - clientconn.go:436 - updateState - csm: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:436 - updateState - csm: %v\n", time.Now().String(), string(s))
 	csm.mu.Lock()
 	defer csm.mu.Unlock()
 	if csm.state == connectivity.Shutdown {
@@ -458,7 +458,7 @@ func (csm *connectivityStateManager) updateState(state connectivity.State) {
 
 func (csm *connectivityStateManager) getState() connectivity.State {
 	s, _ := json.MarshalIndent(csm, "", "\t")
-	fmt.Printf("Paul - clientconn.go:461 - getState - csm: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:461 - getState - csm: %v\n", time.Now().String(), string(s))
 	csm.mu.Lock()
 	defer csm.mu.Unlock()
 	return csm.state
@@ -466,7 +466,7 @@ func (csm *connectivityStateManager) getState() connectivity.State {
 
 func (csm *connectivityStateManager) getNotifyChan() <-chan struct{} {
 	s, _ := json.MarshalIndent(csm, "", "\t")
-	fmt.Printf("Paul - clientconn.go:469 - getNotifyChan - csm: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:469 - getNotifyChan - csm: %v\n", time.Now().String(), string(s))
 	csm.mu.Lock()
 	defer csm.mu.Unlock()
 	if csm.notifyChan == nil {
@@ -535,7 +535,7 @@ type ClientConn struct {
 // This is an EXPERIMENTAL API.
 func (cc *ClientConn) WaitForStateChange(ctx context.Context, sourceState connectivity.State) bool {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:538 - WaitForStateChange - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:538 - WaitForStateChange - cc: %v\n", time.Now().String(), string(s))
 	ch := cc.csMgr.getNotifyChan()
 	if cc.csMgr.getState() != sourceState {
 		return true
@@ -552,15 +552,15 @@ func (cc *ClientConn) WaitForStateChange(ctx context.Context, sourceState connec
 // This is an EXPERIMENTAL API.
 func (cc *ClientConn) GetState() connectivity.State {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:555 - GetState - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:555 - GetState - cc: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(cc.csMgr.getState(), "", "\t")
-	fmt.Printf("Paul - clientconn.go:557 - GetState - cc.csMgr.getState(): %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:557 - GetState - cc.csMgr.getState(): %v\n", time.Now().String(), string(s))
 	return cc.csMgr.getState()
 }
 
 func (cc *ClientConn) scWatcher() {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:563 - scWatcher - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:563 - scWatcher - cc: %v\n", time.Now().String(), string(s))
 	for {
 		select {
 		case sc, ok := <-cc.dopts.scChan:
@@ -583,7 +583,7 @@ func (cc *ClientConn) scWatcher() {
 // returns a status error based on the context.
 func (cc *ClientConn) waitForResolvedAddrs(ctx context.Context) error {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:586 - waitForResolvedAddrs - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:586 - waitForResolvedAddrs - cc: %v\n", time.Now().String(), string(s))
 	// This is on the RPC path, so we use a fast path to avoid the
 	// more-expensive "select" below after the resolver has returned once.
 	if cc.firstResolveEvent.HasFired() {
@@ -602,7 +602,7 @@ func (cc *ClientConn) waitForResolvedAddrs(ctx context.Context) error {
 var emptyServiceConfig *ServiceConfig
 
 func init() {
-	fmt.Printf("Paul - clientconn.go:409 - init")
+	fmt.Printf("Paul - %v - clientconn.go:409 - init")
 	cfg := parseServiceConfig("{}")
 	if cfg.Err != nil {
 		panic(fmt.Sprintf("impossible error parsing empty service config: %v", cfg.Err))
@@ -612,7 +612,7 @@ func init() {
 
 func (cc *ClientConn) maybeApplyDefaultServiceConfig(addrs []resolver.Address) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:615 - maybeApplyDefaultServiceConfig - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:615 - maybeApplyDefaultServiceConfig - cc: %v\n", time.Now().String(), string(s))
 	if cc.sc != nil {
 		cc.applyServiceConfigAndBalancer(cc.sc, addrs)
 		return
@@ -626,7 +626,7 @@ func (cc *ClientConn) maybeApplyDefaultServiceConfig(addrs []resolver.Address) {
 
 func (cc *ClientConn) updateResolverState(s resolver.State, err error) error {
 	s2, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:629 - updateResolverState - cc: %v", s2)
+	fmt.Printf("Paul - %v - clientconn.go:629 - updateResolverState - cc: %v\n", time.Now().String(), string(s2))
 	defer cc.firstResolveEvent.Fire()
 	cc.mu.Lock()
 	// Check if the ClientConn is already closed. Some fields (e.g.
@@ -714,7 +714,7 @@ func (cc *ClientConn) updateResolverState(s resolver.State, err error) error {
 // Caller must hold cc.mu.
 func (cc *ClientConn) switchBalancer(name string) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:717 - switchBalancer - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:717 - switchBalancer - cc: %v\n", time.Now().String(), string(s))
 	if strings.EqualFold(cc.curBalancerName, name) {
 		return
 	}
@@ -753,7 +753,7 @@ func (cc *ClientConn) switchBalancer(name string) {
 
 func (cc *ClientConn) handleSubConnStateChange(sc balancer.SubConn, s connectivity.State, err error) {
 	s2, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:756 - handleSubConnStateChange - cc: %v", s2)
+	fmt.Printf("Paul - %v - clientconn.go:756 - handleSubConnStateChange - cc: %v\n", time.Now().String(), string(s2))
 	cc.mu.Lock()
 	if cc.conns == nil {
 		cc.mu.Unlock()
@@ -770,7 +770,7 @@ func (cc *ClientConn) handleSubConnStateChange(sc balancer.SubConn, s connectivi
 // Caller needs to make sure len(addrs) > 0.
 func (cc *ClientConn) newAddrConn(addrs []resolver.Address, opts balancer.NewSubConnOptions) (*addrConn, error) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:773 - newAddrConn - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:773 - newAddrConn - cc: %v\n", time.Now().String(), string(s))
 	ac := &addrConn{
 		cc:           cc,
 		addrs:        addrs,
@@ -806,7 +806,7 @@ func (cc *ClientConn) newAddrConn(addrs []resolver.Address, opts balancer.NewSub
 // It also tears down the ac with the given error.
 func (cc *ClientConn) removeAddrConn(ac *addrConn, err error) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:809 - removeAddrConn - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:809 - removeAddrConn - cc: %v\n", time.Now().String(), string(s))
 	cc.mu.Lock()
 	if cc.conns == nil {
 		cc.mu.Unlock()
@@ -852,7 +852,7 @@ func (cc *ClientConn) incrCallsFailed() {
 // TODO(bar) Move this to the addrConn section.
 func (ac *addrConn) connect() error {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:855 - connect - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:855 - connect - ac: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	if ac.state == connectivity.Shutdown {
 		ac.mu.Unlock()
@@ -889,7 +889,7 @@ func (ac *addrConn) connect() error {
 //  - If false, it does nothing and returns false.
 func (ac *addrConn) tryUpdateAddrs(addrs []resolver.Address) bool {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:892 - tryUpdateAddrs - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:892 - tryUpdateAddrs - ac: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	defer ac.mu.Unlock()
 	grpclog.Infof("addrConn: tryUpdateAddrs curAddr: %v, addrs: %v", ac.curAddr, addrs)
@@ -929,7 +929,7 @@ func (ac *addrConn) tryUpdateAddrs(addrs []resolver.Address) bool {
 // Otherwise, we return an empty MethodConfig.
 func (cc *ClientConn) GetMethodConfig(method string) MethodConfig {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:932 - GetMethodConfig - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:932 - GetMethodConfig - cc: %v\n", time.Now().String(), string(s))
 	// TODO: Avoid the locking here.
 	cc.mu.RLock()
 	defer cc.mu.RUnlock()
@@ -942,13 +942,13 @@ func (cc *ClientConn) GetMethodConfig(method string) MethodConfig {
 		m = cc.sc.Methods[method[:i+1]]
 	}
 	s, _ = json.MarshalIndent(m, "", "\t")
-	fmt.Printf("Paul - clientconn.go:945 - GetMothodConfig - m: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:945 - GetMothodConfig - m: %v\n", time.Now().String(), string(s))
 	return m
 }
 
 func (cc *ClientConn) healthCheckConfig() *healthCheckConfig {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:951 - healthCheckConfig - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:951 - healthCheckConfig - cc: %v\n", time.Now().String(), string(s))
 	cc.mu.RLock()
 	defer cc.mu.RUnlock()
 	if cc.sc == nil {
@@ -959,7 +959,7 @@ func (cc *ClientConn) healthCheckConfig() *healthCheckConfig {
 
 func (cc *ClientConn) getTransport(ctx context.Context, failfast bool, method string) (transport.ClientTransport, func(balancer.DoneInfo), error) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:962 - getTransport - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:962 - getTransport - cc: %v\n", time.Now().String(), string(s))
 	t, done, err := cc.blockingpicker.pick(ctx, failfast, balancer.PickInfo{
 		Ctx:            ctx,
 		FullMethodName: method,
@@ -972,7 +972,7 @@ func (cc *ClientConn) getTransport(ctx context.Context, failfast bool, method st
 
 func (cc *ClientConn) applyServiceConfigAndBalancer(sc *ServiceConfig, addrs []resolver.Address) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:975 - applyServiceConfigAndBalancer - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:975 - applyServiceConfigAndBalancer - cc: %v\n", time.Now().String(), string(s))
 	if sc == nil {
 		// should never reach here.
 		return
@@ -1024,7 +1024,7 @@ func (cc *ClientConn) applyServiceConfigAndBalancer(sc *ServiceConfig, addrs []r
 
 func (cc *ClientConn) resolveNow(o resolver.ResolveNowOptions) {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1027 - resolveNow - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1027 - resolveNow - cc: %v\n", time.Now().String(), string(s))
 	cc.mu.RLock()
 	r := cc.resolverWrapper
 	cc.mu.RUnlock()
@@ -1046,7 +1046,7 @@ func (cc *ClientConn) resolveNow(o resolver.ResolveNowOptions) {
 // This API is EXPERIMENTAL.
 func (cc *ClientConn) ResetConnectBackoff() {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1049 - ResetConnectBackoff - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1049 - ResetConnectBackoff - cc: %v\n", time.Now().String(), string(s))
 	cc.mu.Lock()
 	conns := cc.conns
 	cc.mu.Unlock()
@@ -1058,7 +1058,7 @@ func (cc *ClientConn) ResetConnectBackoff() {
 // Close tears down the ClientConn and all underlying connections.
 func (cc *ClientConn) Close() error {
 	s, _ := json.MarshalIndent(cc, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1061 - Close - cc: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1061 - Close - cc: %v\n", time.Now().String(), string(s))
 	defer cc.cancel()
 
 	cc.mu.Lock()
@@ -1140,7 +1140,7 @@ type addrConn struct {
 // Note: this requires a lock on ac.mu.
 func (ac *addrConn) updateConnectivityState(s connectivity.State, lastErr error) {
 	s2, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1143 - updateConnectivityState - ac: %v", s2)
+	fmt.Printf("Paul - %v - clientconn.go:1143 - updateConnectivityState - ac: %v\n", time.Now().String(), string(s2))
 	if ac.state == s {
 		return
 	}
@@ -1160,7 +1160,7 @@ func (ac *addrConn) updateConnectivityState(s connectivity.State, lastErr error)
 // receiving a GoAway.
 func (ac *addrConn) adjustParams(r transport.GoAwayReason) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1163 - adjustParams - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1163 - adjustParams - ac: %v\n", time.Now().String(), string(s))
 	switch r {
 	case transport.GoAwayTooManyPings:
 		v := 2 * ac.dopts.copts.KeepaliveParams.Time
@@ -1174,7 +1174,7 @@ func (ac *addrConn) adjustParams(r transport.GoAwayReason) {
 
 func (ac *addrConn) resetTransport() {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1177 - resetTransport - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1177 - resetTransport - ac: %v\n", time.Now().String(), string(s))
 	for i := 0; ; i++ {
 		if i > 0 {
 			ac.cc.resolveNow(resolver.ResolveNowOptions{})
@@ -1276,7 +1276,7 @@ func (ac *addrConn) resetTransport() {
 // the successful case. The Event fires when the returned transport disconnects.
 func (ac *addrConn) tryAllAddrs(addrs []resolver.Address, connectDeadline time.Time) (transport.ClientTransport, resolver.Address, *grpcsync.Event, error) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1279 - tryAllAddrs - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1279 - tryAllAddrs - ac: %v\n", time.Now().String(), string(s))
 	var firstConnErr error
 	for _, addr := range addrs {
 		ac.mu.Lock()
@@ -1321,7 +1321,7 @@ func (ac *addrConn) tryAllAddrs(addrs []resolver.Address, connectDeadline time.T
 // disconnects.
 func (ac *addrConn) createTransport(addr resolver.Address, copts transport.ConnectOptions, connectDeadline time.Time) (transport.ClientTransport, *grpcsync.Event, error) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1324 - createTransport - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1324 - createTransport - ac: %v\n", time.Now().String(), string(s))
 	prefaceReceived := make(chan struct{})
 	onCloseCalled := make(chan struct{})
 	reconnect := grpcsync.NewEvent()
@@ -1418,7 +1418,7 @@ func (ac *addrConn) createTransport(addr resolver.Address, copts transport.Conne
 // Caller must hold ac.mu.
 func (ac *addrConn) startHealthCheck(ctx context.Context) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1421 - startHealthCheck - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1421 - startHealthCheck - ac: %v\n", time.Now().String(), string(s))
 	var healthcheckManagingState bool
 	defer func() {
 		if !healthcheckManagingState {
@@ -1487,7 +1487,7 @@ func (ac *addrConn) startHealthCheck(ctx context.Context) {
 
 func (ac *addrConn) resetConnectBackoff() {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1490 - resetConnectBackoff - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1490 - resetConnectBackoff - ac: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	close(ac.resetBackoff)
 	ac.backoffIdx = 0
@@ -1500,7 +1500,7 @@ func (ac *addrConn) resetConnectBackoff() {
 // If ac's state is IDLE, it will trigger ac to connect.
 func (ac *addrConn) getReadyTransport() (transport.ClientTransport, bool) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1503 - getReadyTransport - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1503 - getReadyTransport - ac: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	if ac.state == connectivity.Ready && ac.transport != nil {
 		t := ac.transport
@@ -1526,7 +1526,7 @@ func (ac *addrConn) getReadyTransport() (transport.ClientTransport, bool) {
 // tearDown doesn't remove ac from ac.cc.conns.
 func (ac *addrConn) tearDown(err error) {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1529 - tearDown - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1529 - tearDown - ac: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	if ac.state == connectivity.Shutdown {
 		ac.mu.Unlock()
@@ -1567,9 +1567,9 @@ func (ac *addrConn) tearDown(err error) {
 
 func (ac *addrConn) getState() connectivity.State {
 	s, _ := json.MarshalIndent(ac, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1570 - getState - ac: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1570 - getState - ac: %v\n", time.Now().String(), string(s))
 	s, _ = json.MarshalIndent(ac.state, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1572 - getState - ac.state: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1572 - getState - ac.state: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	defer ac.mu.Unlock()
 	return ac.state
@@ -1616,7 +1616,7 @@ type retryThrottler struct {
 // the service config.
 func (rt *retryThrottler) throttle() bool {
 	s, _ := json.MarshalIndent(rt, "", "\t")
-	fmt.Printf("Paul - clientconn.go:1619 - throttle - rt: %v", s)
+	fmt.Printf("Paul - %v - clientconn.go:1619 - throttle - rt: %v\n", time.Now().String(), string(s))
 	if rt == nil {
 		return false
 	}
