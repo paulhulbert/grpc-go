@@ -389,7 +389,7 @@ func (cs *clientStream) newAttemptLocked(sh stats.Handler, trInfo *traceInfo) (r
 
 func (a *csAttempt) newStream() error {
 	s2, _ := json.MarshalIndent(a, "", "\t")
-	fmt.Printf("Paul - %v - stream.go:392 - newStream - a: %v\n", time.Now().String(), string(s))
+	fmt.Printf("Paul - %v - stream.go:392 - newStream - a: %v\n", time.Now().String(), string(s2))
 	cs := a.cs
 	cs.callHdr.PreviousAttempts = cs.numRetries
 	s, err := a.t.NewStream(cs.ctx, cs.callHdr)
