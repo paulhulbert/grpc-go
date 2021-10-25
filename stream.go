@@ -144,13 +144,13 @@ type ClientStream interface {
 func (cc *ClientConn) NewStream(ctx context.Context, desc *StreamDesc, method string, opts ...CallOption) (ClientStream, error) {
 	// allow interceptor to see all applicable call options, which means those
 	// configured as defaults from dial option as well as per-call options
-	s, _ := json.MarshalIndent(ctx, "", "\t")
+	s, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - stream.go:147 - NewStream - ctx: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(desc, "", "\t")
+	s, _ = json.Marshal(desc)
 	fmt.Printf("Paul - %v - stream.go:150 - NewStream - desc: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(method, "", "\t")
+	s, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - stream.go:152 - NewStream - method: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(opts, "", "\t")
+	s, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - stream.go:154 - NewStream - opts: %v\n", time.Now().String(), string(s))
 	opts = combine(cc.dopts.callOptions, opts)
 
@@ -162,25 +162,25 @@ func (cc *ClientConn) NewStream(ctx context.Context, desc *StreamDesc, method st
 
 // NewClientStream is a wrapper for ClientConn.NewStream.
 func NewClientStream(ctx context.Context, desc *StreamDesc, cc *ClientConn, method string, opts ...CallOption) (ClientStream, error) {
-	s, _ := json.MarshalIndent(ctx, "", "\t")
+	s, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - stream.go:166 - NewClientStream - ctx: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(desc, "", "\t")
+	s, _ = json.Marshal(desc)
 	fmt.Printf("Paul - %v - stream.go:168 - NewClientStream - desc: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(method, "", "\t")
+	s, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - stream.go:170 - NewClientStream - method: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(opts, "", "\t")
+	s, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - stream.go:172 - NewClientStream - opts: %v\n", time.Now().String(), string(s))
 	return cc.NewStream(ctx, desc, method, opts...)
 }
 
 func newClientStream(ctx context.Context, desc *StreamDesc, cc *ClientConn, method string, opts ...CallOption) (_ ClientStream, err error) {
-	s, _ := json.MarshalIndent(ctx, "", "\t")
+	s, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - stream.go:178 - newClientStream - ctx: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(desc, "", "\t")
+	s, _ = json.Marshal(desc)
 	fmt.Printf("Paul - %v - stream.go:180 - newClientStream - desc: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(method, "", "\t")
+	s, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - stream.go:182 - newClientStream - method: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(opts, "", "\t")
+	s, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - stream.go:184 - newClientStream - opts: %v\n", time.Now().String(), string(s))
 	if channelz.IsOn() {
 		cc.incrCallsStarted()
@@ -388,7 +388,7 @@ func (cs *clientStream) newAttemptLocked(sh stats.Handler, trInfo *traceInfo) (r
 }
 
 func (a *csAttempt) newStream() error {
-	s2, _ := json.MarshalIndent(a, "", "\t")
+	s2, _ := json.Marshal(a)
 	fmt.Printf("Paul - %v - stream.go:392 - newStream - a: %v\n", time.Now().String(), string(s2))
 	cs := a.cs
 	cs.callHdr.PreviousAttempts = cs.numRetries
@@ -706,7 +706,7 @@ func (cs *clientStream) bufferForRetryLocked(sz int, op func(a *csAttempt) error
 }
 
 func (cs *clientStream) SendMsg(m interface{}) (err error) {
-	s, _ := json.MarshalIndent(cs, "", "\t")
+	s, _ := json.Marshal(cs)
 	fmt.Printf("Paul - %v - stream.go:710 - SendMsg - cs: %v\n", time.Now().String(), string(s))
 	defer func() {
 		if err != nil && err != io.EOF {
@@ -727,13 +727,13 @@ func (cs *clientStream) SendMsg(m interface{}) (err error) {
 
 	// load hdr, payload, data
 	hdr, payload, data, err := prepareMsg(m, cs.codec, cs.cp, cs.comp)
-	s, _ = json.MarshalIndent(hdr, "", "\t")
+	s, _ = json.Marshal(hdr)
 	fmt.Printf("Paul - %v - stream.go:731 - SendMsg - hdr: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(payload, "", "\t")
+	s, _ = json.Marshal(payload)
 	fmt.Printf("Paul - %v - stream.go:733 - SendMsg - payload: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(data, "", "\t")
+	s, _ = json.Marshal(data)
 	fmt.Printf("Paul - %v - stream.go:735 - SendMsg - data: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(err, "", "\t")
+	s, _ = json.Marshal(err)
 	fmt.Printf("Paul - %v - stream.go:737 - SendMsg - err: %v\n", time.Now().String(), string(s))
 	if err != nil {
 		return err
@@ -744,7 +744,7 @@ func (cs *clientStream) SendMsg(m interface{}) (err error) {
 		return status.Errorf(codes.ResourceExhausted, "trying to send message larger than max (%d vs. %d)", len(payload), *cs.callInfo.maxSendMessageSize)
 	}
 	msgBytes := data // Store the pointer before setting to nil. For binary logging.
-	s, _ = json.MarshalIndent(msgBytes, "", "\t")
+	s, _ = json.Marshal(msgBytes)
 	fmt.Printf("Paul - %v - stream.go:748 - SendMsg - msgBytes: %v\n", time.Now().String(), string(s))
 	op := func(a *csAttempt) error {
 		err := a.sendMsg(m, hdr, payload, data)
@@ -764,7 +764,7 @@ func (cs *clientStream) SendMsg(m interface{}) (err error) {
 }
 
 func (cs *clientStream) RecvMsg(m interface{}) error {
-	s, _ := json.MarshalIndent(cs, "", "\t")
+	s, _ := json.Marshal(cs)
 	fmt.Printf("Paul - %v - stream.go:768 - RecvMsg - cs: %v\n", time.Now().String(), string(s))
 	if cs.binlog != nil && !cs.serverHeaderBinlogged {
 		// Call Header() to binary log header if it's not already logged.
@@ -774,7 +774,7 @@ func (cs *clientStream) RecvMsg(m interface{}) error {
 	if cs.binlog != nil {
 		recvInfo = &payloadInfo{}
 	}
-	s, _ = json.MarshalIndent(recvInfo, "", "\t")
+	s, _ = json.Marshal(recvInfo)
 	fmt.Printf("Paul - %v - stream.go:787 - RecvMsg - recvInfo: %v\n", time.Now().String(), string(s))
 	err := cs.withRetry(func(a *csAttempt) error {
 		return a.recvMsg(m, recvInfo)
@@ -809,7 +809,7 @@ func (cs *clientStream) RecvMsg(m interface{}) error {
 }
 
 func (cs *clientStream) CloseSend() error {
-	s, _ := json.MarshalIndent(cs, "", "\t")
+	s, _ := json.Marshal(cs)
 	fmt.Printf("Paul - %v - stream.go:813 - CLoseSend - cs: %v\n", time.Now().String(), string(s))
 	if cs.sentLast {
 		// TODO: return an error and finish the stream instead, due to API misuse?
@@ -835,7 +835,7 @@ func (cs *clientStream) CloseSend() error {
 }
 
 func (cs *clientStream) finish(err error) {
-	s, _ := json.MarshalIndent(cs, "", "\t")
+	s, _ := json.Marshal(cs)
 	fmt.Printf("Paul - %v - stream.go:839 - finish - cs: %v\n", time.Now().String(), string(s))
 	if err == io.EOF {
 		// Ending a stream with EOF indicates a success.
@@ -978,7 +978,7 @@ func (a *csAttempt) recvMsg(m interface{}, payInfo *payloadInfo) (err error) {
 }
 
 func (a *csAttempt) finish(err error) {
-	s, _ := json.MarshalIndent(a, "", "\t")
+	s, _ := json.Marshal(a)
 	fmt.Printf("Paul - %v - stream.go:982 - finish - a: %v\n", time.Now().String(), string(s))
 	a.mu.Lock()
 	if a.finished {
@@ -1044,17 +1044,17 @@ func (a *csAttempt) finish(err error) {
 // - no service config (or wait for service config)
 // - no tracing or stats
 func newNonRetryClientStream(ctx context.Context, desc *StreamDesc, method string, t transport.ClientTransport, ac *addrConn, opts ...CallOption) (_ ClientStream, err error) {
-	s2, _ := json.MarshalIndent(ctx, "", "\t")
+	s2, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - stream.go:1048 - newNonRetryClientStream - ctx: %v\n", time.Now().String(), string(s2))
-	s2, _ = json.MarshalIndent(desc, "", "\t")
+	s2, _ = json.Marshal(desc)
 	fmt.Printf("Paul - %v - stream.go:1050 - newNonRetryClientStream - desc: %v\n", time.Now().String(), string(s2))
-	s2, _ = json.MarshalIndent(method, "", "\t")
+	s2, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - stream.go:1052 - newNonRetryClientStream - method: %v\n", time.Now().String(), string(s2))
-	s2, _ = json.MarshalIndent(t, "", "\t")
+	s2, _ = json.Marshal(t)
 	fmt.Printf("Paul - %v - stream.go:1054 - newNonRetryClientStream - t: %v\n", time.Now().String(), string(s2))
-	s2, _ = json.MarshalIndent(ac, "", "\t")
+	s2, _ = json.Marshal(ac)
 	fmt.Printf("Paul - %v - stream.go:1056 - newNonRetryClientStream - ac: %v\n", time.Now().String(), string(s2))
-	s2, _ = json.MarshalIndent(opts, "", "\t")
+	s2, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - stream.go:1058 - newNonRetryClientStream - opts: %v\n", time.Now().String(), string(s2))
 	if t == nil {
 		// TODO: return RPC error here?
@@ -1191,7 +1191,7 @@ func (as *addrConnStream) Trailer() metadata.MD {
 }
 
 func (as *addrConnStream) CloseSend() error {
-	s, _ := json.MarshalIndent(as, "", "\t")
+	s, _ := json.Marshal(as)
 	fmt.Printf("Paul - %v - stream.go:1195 - CloseSend - as: %v\n", time.Now().String(), string(s))
 	if as.sentLast {
 		// TODO: return an error and finish the stream instead, due to API misuse?
@@ -1212,7 +1212,7 @@ func (as *addrConnStream) Context() context.Context {
 }
 
 func (as *addrConnStream) SendMsg(m interface{}) (err error) {
-	s, _ := json.MarshalIndent(as, "", "\t")
+	s, _ := json.Marshal(as)
 	fmt.Printf("Paul - %v - stream.go:1216 - SendMsg - as: %v\n", time.Now().String(), string(s))
 	defer func() {
 		if err != nil && err != io.EOF {
@@ -1233,9 +1233,9 @@ func (as *addrConnStream) SendMsg(m interface{}) (err error) {
 
 	// load hdr, payload, data
 	hdr, payld, _, err := prepareMsg(m, as.codec, as.cp, as.comp)
-	s, _ = json.MarshalIndent(hdr, "", "\t")
+	s, _ = json.Marshal(hdr)
 	fmt.Printf("Paul - %v - stream.go:1237 - SendMsg - hdr: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(payld, "", "\t")
+	s, _ = json.Marshal(payld)
 	fmt.Printf("Paul - %v - stream.go:1239 - SendMsg - payld: %v\n", time.Now().String(), string(s))
 	if err != nil {
 		return err
@@ -1263,7 +1263,7 @@ func (as *addrConnStream) SendMsg(m interface{}) (err error) {
 }
 
 func (as *addrConnStream) RecvMsg(m interface{}) (err error) {
-	s, _ := json.MarshalIndent(as, "", "\t")
+	s, _ := json.Marshal(as)
 	fmt.Printf("Paul - %v - stream.go:1267 - RecvMsg - as: %v\n", time.Now().String(), string(s))
 	defer func() {
 		if err != nil || !as.desc.ServerStreams {
@@ -1320,7 +1320,7 @@ func (as *addrConnStream) RecvMsg(m interface{}) (err error) {
 }
 
 func (as *addrConnStream) finish(err error) {
-	s, _ := json.MarshalIndent(as, "", "\t")
+	s, _ := json.Marshal(as)
 	fmt.Printf("Paul - %v - stream.go:1324 - finish - as: %v\n", time.Now().String(), string(s))
 	as.mu.Lock()
 	if as.finished {
@@ -1454,7 +1454,7 @@ func (ss *serverStream) SetTrailer(md metadata.MD) {
 }
 
 func (ss *serverStream) SendMsg(m interface{}) (err error) {
-	s, _ := json.MarshalIndent(ss, "", "\t")
+	s, _ := json.Marshal(ss)
 	fmt.Printf("Paul - %v - stream.go:1458 - SendMsg - ss: %v\n", time.Now().String(), string(s))
 	defer func() {
 		if ss.trInfo != nil {
@@ -1486,13 +1486,13 @@ func (ss *serverStream) SendMsg(m interface{}) (err error) {
 
 	// load hdr, payload, data
 	hdr, payload, data, err := prepareMsg(m, ss.codec, ss.cp, ss.comp)
-	s, _ = json.MarshalIndent(hdr, "", "\t")
+	s, _ = json.Marshal(hdr)
 	fmt.Printf("Paul - %v - stream.go:1490 - SendMsg - hdr: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(payload, "", "\t")
+	s, _ = json.Marshal(payload)
 	fmt.Printf("Paul - %v - stream.go:1492 - SendMsg - payload: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(data, "", "\t")
+	s, _ = json.Marshal(data)
 	fmt.Printf("Paul - %v - stream.go:1494 - SendMsg - data: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(err, "", "\t")
+	s, _ = json.Marshal(err)
 	fmt.Printf("Paul - %v - stream.go:1496 - SendMsg - err: %v\n", time.Now().String(), string(s))
 	if err != nil {
 		return err
@@ -1524,7 +1524,7 @@ func (ss *serverStream) SendMsg(m interface{}) (err error) {
 }
 
 func (ss *serverStream) RecvMsg(m interface{}) (err error) {
-	s, _ := json.MarshalIndent(ss, "", "\t")
+	s, _ := json.Marshal(ss)
 	fmt.Printf("Paul - %v - stream.go:1528 - RecvMsg - ss: %v\n", time.Now().String(), string(s))
 	defer func() {
 		if ss.trInfo != nil {
@@ -1557,7 +1557,7 @@ func (ss *serverStream) RecvMsg(m interface{}) (err error) {
 	if ss.statsHandler != nil || ss.binlog != nil {
 		payInfo = &payloadInfo{}
 	}
-	s, _ = json.MarshalIndent(payInfo, "", "\t")
+	s, _ = json.Marshal(payInfo)
 	fmt.Printf("Paul - %v - stream.go:1561 - RecvMsg - payInfo: %v\n", time.Now().String(), string(s))
 	if err := recv(ss.p, ss.codec, ss.s, ss.dc, m, ss.maxReceiveMessageSize, payInfo, ss.decomp); err != nil {
 		if err == io.EOF {
@@ -1599,7 +1599,7 @@ func MethodFromServerStream(stream ServerStream) (string, bool) {
 // using the compressors passed or using the
 // passed preparedmsg
 func prepareMsg(m interface{}, codec baseCodec, cp Compressor, comp encoding.Compressor) (hdr, payload, data []byte, err error) {
-	s, _ := json.MarshalIndent(m, "", "\t")
+	s, _ := json.Marshal(m)
 	fmt.Printf("Paul - %v - stream.go:1603 - prepareMsg - m: %v\n", time.Now().String(), string(s))
 	if preparedMsg, ok := m.(*PreparedMsg); ok {
 		return preparedMsg.hdr, preparedMsg.payload, preparedMsg.encodedData, nil
@@ -1615,11 +1615,11 @@ func prepareMsg(m interface{}, codec baseCodec, cp Compressor, comp encoding.Com
 		return nil, nil, nil, err
 	}
 	hdr, payload = msgHeader(data, compData)
-	s, _ = json.MarshalIndent(hdr, "", "\t")
+	s, _ = json.Marshal(hdr)
 	fmt.Printf("Paul - %v - stream.go:1619 - prepareMsg - hdr: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(payload, "", "\t")
+	s, _ = json.Marshal(payload)
 	fmt.Printf("Paul - %v - stream.go:1621 - prepareMsg - payload: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(data, "", "\t")
+	s, _ = json.Marshal(data)
 	fmt.Printf("Paul - %v - stream.go:1623 - prepareMsg - data: %v\n", time.Now().String(), string(s))
 	return hdr, payload, data, nil
 }

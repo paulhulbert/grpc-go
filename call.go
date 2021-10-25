@@ -30,15 +30,15 @@ import (
 //
 // All errors returned by Invoke are compatible with the status package.
 func (cc *ClientConn) Invoke(ctx context.Context, method string, args, reply interface{}, opts ...CallOption) error {
-	s, _ := json.MarshalIndent(ctx, "", "\t")
+	s, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - call.go:33 - Invoke - ctx: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(method, "", "\t")
+	s, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - call.go:35 - Invoke - method: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(args, "", "\t")
+	s, _ = json.Marshal(args)
 	fmt.Printf("Paul - %v - call.go:37 - Invoke - args: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(reply, "", "\t")
+	s, _ = json.Marshal(reply)
 	fmt.Printf("Paul - %v - call.go:39 - Invoke - reply: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(opts, "", "\t")
+	s, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - call.go:41 - Invoke - opts: %v\n", time.Now().String(), string(s))
 	// allow interceptor to see all applicable call options, which means those
 	// configured as defaults from dial option as well as per-call options
@@ -76,17 +76,17 @@ func Invoke(ctx context.Context, method string, args, reply interface{}, cc *Cli
 var unaryStreamDesc = &StreamDesc{ServerStreams: false, ClientStreams: false}
 
 func invoke(ctx context.Context, method string, req, reply interface{}, cc *ClientConn, opts ...CallOption) error {
-	s, _ := json.MarshalIndent(ctx, "", "\t")
+	s, _ := json.Marshal(ctx)
 	fmt.Printf("Paul - %v - call.go:79 - invoke - ctx: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(method, "", "\t")
+	s, _ = json.Marshal(method)
 	fmt.Printf("Paul - %v - call.go:81 - invoke - method: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(req, "", "\t")
+	s, _ = json.Marshal(req)
 	fmt.Printf("Paul - %v - call.go:83 - invoke - req: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(reply, "", "\t")
+	s, _ = json.Marshal(reply)
 	fmt.Printf("Paul - %v - call.go:85 - invoke - reply: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(cc, "", "\t")
+	s, _ = json.Marshal(cc)
 	fmt.Printf("Paul - %v - call.go:87 - invoke - cc: %v\n", time.Now().String(), string(s))
-	s, _ = json.MarshalIndent(opts, "", "\t")
+	s, _ = json.Marshal(opts)
 	fmt.Printf("Paul - %v - call.go:89 - invoke - opts: %v\n", time.Now().String(), string(s))
 	cs, err := newClientStream(ctx, unaryStreamDesc, cc, method, opts...)
 	if err != nil {
