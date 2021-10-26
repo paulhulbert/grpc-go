@@ -814,6 +814,8 @@ func (cc *ClientConn) removeAddrConn(ac *addrConn, err error) {
 	}
 	delete(cc.conns, ac)
 	cc.mu.Unlock()
+	s, _ = json.Marshal(err)
+	fmt.Printf("Paul - %v - clientconn.go:818 - removeAddrConn - err: %v\n", time.Now().String(), string(s))
 	ac.tearDown(err)
 }
 

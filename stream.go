@@ -775,10 +775,10 @@ func (cs *clientStream) RecvMsg(m interface{}) error {
 		recvInfo = &payloadInfo{}
 	}
 	err := cs.withRetry(func(a *csAttempt) error {
-		s, _ = json.Marshal(recvInfo)
-		fmt.Printf("Paul - %v - stream.go:779 - RecvMsg - recvInfo: %v\n", time.Now().String(), string(s))
 		return a.recvMsg(m, recvInfo)
 	}, cs.commitAttemptLocked)
+	s, _ = json.Marshal(recvInfo)
+	fmt.Printf("Paul - %v - stream.go:781 - RecvMsg - recvInfo: %v\n", time.Now().String(), string(s))
 	if cs.binlog != nil && err == nil {
 		cs.binlog.Log(&binarylog.ServerMessage{
 			OnClientSide: true,
