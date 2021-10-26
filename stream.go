@@ -909,10 +909,14 @@ func (a *csAttempt) sendMsg(m interface{}, hdr, payld, data []byte) error {
 }
 
 func (a *csAttempt) recvMsg(m interface{}, payInfo *payloadInfo) (err error) {
+	s, _ := json.Marshal(payInfo)
+	fmt.Printf("Paul - %v - clientconn.go:913 - recvMsg - payInfo: %v\n", time.Now().String(), string(s))
 	cs := a.cs
 	if a.statsHandler != nil && payInfo == nil {
 		payInfo = &payloadInfo{}
 	}
+	s, _ = json.Marshal(payInfo)
+	fmt.Printf("Paul - %v - clientconn.go:919 - recvMsg - payInfo: %v\n", time.Now().String(), string(s))
 
 	if !a.decompSet {
 		// Block until we receive headers containing received message encoding.

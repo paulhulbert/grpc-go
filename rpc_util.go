@@ -23,6 +23,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -704,7 +705,11 @@ func decompress(compressor encoding.Compressor, d []byte, maxReceiveMessageSize 
 // dc takes precedence over compressor.
 // TODO(dfawley): wrap the old compressor/decompressor using the new API?
 func recv(p *parser, c baseCodec, s *transport.Stream, dc Decompressor, m interface{}, maxReceiveMessageSize int, payInfo *payloadInfo, compressor encoding.Compressor) error {
+	s2, _ := json.Marshal(payInfo)
+	fmt.Printf("Paul - %v - rpc_util.go:709 - recv - payInfo: %v\n", time.Now().String(), string(s2))
 	d, err := recvAndDecompress(p, s, dc, maxReceiveMessageSize, payInfo, compressor)
+	s2, _ = json.Marshal(d)
+	fmt.Printf("Paul - %v - rpc_util.go:712 - d - err: %v\n", time.Now().String(), string(s2))
 	if err != nil {
 		return err
 	}

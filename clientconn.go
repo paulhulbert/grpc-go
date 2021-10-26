@@ -434,6 +434,8 @@ type connectivityStateManager struct {
 func (csm *connectivityStateManager) updateState(state connectivity.State) {
 	s, _ := json.Marshal(csm)
 	fmt.Printf("Paul - %v - clientconn.go:436 - updateState - csm: %v\n", time.Now().String(), string(s))
+	s, _ = json.Marshal(state)
+	fmt.Printf("Paul - %v - clientconn.go:438 - updateState - state: %v\n", time.Now().String(), string(s))
 	csm.mu.Lock()
 	defer csm.mu.Unlock()
 	if csm.state == connectivity.Shutdown {
@@ -807,6 +809,8 @@ func (cc *ClientConn) newAddrConn(addrs []resolver.Address, opts balancer.NewSub
 func (cc *ClientConn) removeAddrConn(ac *addrConn, err error) {
 	s, _ := json.Marshal(cc)
 	fmt.Printf("Paul - %v - clientconn.go:809 - removeAddrConn - cc: %v\n", time.Now().String(), string(s))
+	s, _ = json.Marshal(err)
+	fmt.Printf("Paul - %v - clientconn.go:811 - removeAddrConn - err: %v\n", time.Now().String(), string(s))
 	cc.mu.Lock()
 	if cc.conns == nil {
 		cc.mu.Unlock()
@@ -814,8 +818,6 @@ func (cc *ClientConn) removeAddrConn(ac *addrConn, err error) {
 	}
 	delete(cc.conns, ac)
 	cc.mu.Unlock()
-	s, _ = json.Marshal(err)
-	fmt.Printf("Paul - %v - clientconn.go:818 - removeAddrConn - err: %v\n", time.Now().String(), string(s))
 	ac.tearDown(err)
 }
 
@@ -1142,7 +1144,11 @@ type addrConn struct {
 // Note: this requires a lock on ac.mu.
 func (ac *addrConn) updateConnectivityState(s connectivity.State, lastErr error) {
 	s2, _ := json.Marshal(ac)
-	fmt.Printf("Paul - %v - clientconn.go:1143 - updateConnectivityState - ac: %v\n", time.Now().String(), string(s2))
+	fmt.Printf("Paul - %v - clientconn.go:1145 - updateConnectivityState - ac: %v\n", time.Now().String(), string(s2))
+	s2, _ = json.Marshal(s)
+	fmt.Printf("Paul - %v - clientconn.go:1147 - updateConnectivityState - s: %v\n", time.Now().String(), string(s2))
+	s2, _ = json.Marshal(lastErr)
+	fmt.Printf("Paul - %v - clientconn.go:1149 - updateConnectivityState - lastErr: %v\n", time.Now().String(), string(s2))
 	if ac.state == s {
 		return
 	}
@@ -1528,7 +1534,9 @@ func (ac *addrConn) getReadyTransport() (transport.ClientTransport, bool) {
 // tearDown doesn't remove ac from ac.cc.conns.
 func (ac *addrConn) tearDown(err error) {
 	s, _ := json.Marshal(ac)
-	fmt.Printf("Paul - %v - clientconn.go:1529 - tearDown - ac: %v\n", time.Now().String(), string(s))
+	fmt.Printf("Paul - %v - clientconn.go:1535 - tearDown - ac: %v\n", time.Now().String(), string(s))
+	s, _ = json.Marshal(err)
+	fmt.Printf("Paul - %v - clientconn.go:1537 - tearDown - err: %v\n", time.Now().String(), string(s))
 	ac.mu.Lock()
 	if ac.state == connectivity.Shutdown {
 		ac.mu.Unlock()
