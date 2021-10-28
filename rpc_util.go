@@ -29,6 +29,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/url"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"time"
@@ -709,7 +710,12 @@ func recv(p *parser, c baseCodec, s *transport.Stream, dc Decompressor, m interf
 	fmt.Printf("Paul - %v - rpc_util.go:709 - recv - payInfo: %v\n", time.Now().String(), string(s2))
 	d, err := recvAndDecompress(p, s, dc, maxReceiveMessageSize, payInfo, compressor)
 	s2, _ = json.Marshal(d)
-	fmt.Printf("Paul - %v - rpc_util.go:712 - d - err: %v\n", time.Now().String(), string(s2))
+	fmt.Printf("Paul - %v - rpc_util.go:712 - recv - d: %v\n", time.Now().String(), string(s2))
+	if d == nil {
+		fmt.Printf("Paul - rpc_util.go: 715 - recv - Stack trace:\n")
+		debug.PrintStack()
+		fmt.Println("Hit breakpoint at rpc_util.go:714 - recv")
+	}
 	if err != nil {
 		return err
 	}

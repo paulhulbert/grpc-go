@@ -24,6 +24,7 @@ import (
 	"errors"
 	"io"
 	"math"
+	"runtime/debug"
 	"strconv"
 	"sync"
 	"time"
@@ -766,6 +767,8 @@ func (cs *clientStream) SendMsg(m interface{}) (err error) {
 func (cs *clientStream) RecvMsg(m interface{}) error {
 	s, _ := json.Marshal(cs)
 	fmt.Printf("Paul - %v - stream.go:768 - RecvMsg - cs: %v\n", time.Now().String(), string(s))
+	fmt.Printf("Paul - stream.go: 769 - RecvMsg - Stack trace:\n")
+	debug.PrintStack()
 	if cs.binlog != nil && !cs.serverHeaderBinlogged {
 		// Call Header() to binary log header if it's not already logged.
 		cs.Header()
