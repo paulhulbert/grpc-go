@@ -1442,6 +1442,10 @@ func (ss *serverStream) SetHeader(md metadata.MD) error {
 }
 
 func (ss *serverStream) SendHeader(md metadata.MD) error {
+	s, _ := json.Marshal(ss)
+	fmt.Printf("Paul - %v - stream.go:1446 - SendHeader - ss: %v\n", time.Now().String(), string(s))
+	s, _ = json.Marshal(md)
+	fmt.Printf("Paul - %v - stream.go:1448 - SendHeader - md: %v\n", time.Now().String(), string(s))
 	err := ss.t.WriteHeader(ss.s, md)
 	if ss.binlog != nil && !ss.serverHeaderBinlogged {
 		h, _ := ss.s.Header()
@@ -1478,6 +1482,8 @@ func (ss *serverStream) SendMsg(m interface{}) (err error) {
 		}
 		if err != nil && err != io.EOF {
 			st, _ := status.FromError(toRPCErr(err))
+			s, _ := json.Marshal(st)
+			fmt.Printf("Paul - %v - server.go:1486 - SendMsg - st: %v\n", time.Now().String(), string(s))
 			ss.t.WriteStatus(ss.s, st)
 			// Non-user specified status was sent out. This should be an error
 			// case (as a server side Cancel maybe).
@@ -1548,6 +1554,8 @@ func (ss *serverStream) RecvMsg(m interface{}) (err error) {
 		}
 		if err != nil && err != io.EOF {
 			st, _ := status.FromError(toRPCErr(err))
+			s, _ := json.Marshal(st)
+			fmt.Printf("Paul - %v - server.go:1558 - RecvMsg - st: %v\n", time.Now().String(), string(s))
 			ss.t.WriteStatus(ss.s, st)
 			// Non-user specified status was sent out. This should be an error
 			// case (as a server side Cancel maybe).

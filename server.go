@@ -20,6 +20,7 @@ package grpc
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -28,6 +29,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -842,7 +844,13 @@ func (s *Server) incrCallsFailed() {
 }
 
 func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Stream, msg interface{}, cp Compressor, opts *transport.Options, comp encoding.Compressor) error {
+	s2, _ := json.Marshal(s)
+	fmt.Printf("Paul - %v - server.go:847 - sendResponse - s: %v\n", time.Now().String(), string(s2))
+	s2, _ = json.Marshal(msg)
+	fmt.Printf("Paul - %v - server.go:849 - sendResponse - msg: %v\n", time.Now().String(), string(s2))
 	data, err := encode(s.getCodec(stream.ContentSubtype()), msg)
+	s2, _ = json.Marshal(data)
+	fmt.Printf("Paul - %v - server.go:852 - sendResponse - data: %v\n", time.Now().String(), string(s2))
 	if err != nil {
 		grpclog.Errorln("grpc: server failed to encode response: ", err)
 		return err
@@ -853,6 +861,8 @@ func (s *Server) sendResponse(t transport.ServerTransport, stream *transport.Str
 		return err
 	}
 	hdr, payload := msgHeader(data, compData)
+	s2, _ = json.Marshal(hdr)
+	fmt.Printf("Paul - %v - server.go:864 - sendResponse - hdr: %v\n", time.Now().String(), string(s2))
 	// TODO(dfawley): should we be checking len(data) instead?
 	if len(payload) > s.opts.maxSendMessageSize {
 		return status.Errorf(codes.ResourceExhausted, "grpc: trying to send message larger than max (%d vs. %d)", len(payload), s.opts.maxSendMessageSize)
@@ -961,6 +971,8 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 		decomp = encoding.GetCompressor(rc)
 		if decomp == nil {
 			st := status.Newf(codes.Unimplemented, "grpc: Decompressor is not installed for grpc-encoding %q", rc)
+			s2, _ := json.Marshal(st)
+			fmt.Printf("Paul - %v - server.go:975 - processUnaryRPC - st: %v\n", time.Now().String(), string(s2))
 			t.WriteStatus(stream, st)
 			return st.Err()
 		}
@@ -988,6 +1000,8 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	d, err := recvAndDecompress(&parser{r: stream}, stream, dc, s.opts.maxReceiveMessageSize, payInfo, decomp)
 	if err != nil {
 		if st, ok := status.FromError(err); ok {
+			s, _ := json.Marshal(st)
+			fmt.Printf("Paul - %v - server.go:1004 - processUnaryRPC - st: %v\n", time.Now().String(), string(s))
 			if e := t.WriteStatus(stream, st); e != nil {
 				grpclog.Warningf("grpc: Server.processUnaryRPC failed to write status %v", e)
 			}
@@ -1033,6 +1047,8 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			trInfo.tr.LazyLog(stringer(appStatus.Message()), true)
 			trInfo.tr.SetError()
 		}
+		s, _ := json.Marshal(appStatus)
+		fmt.Printf("Paul - %v - server.go:1051 - processUnaryRPC - appStatus: %v\n", time.Now().String(), string(s))
 		if e := t.WriteStatus(stream, appStatus); e != nil {
 			grpclog.Warningf("grpc: Server.processUnaryRPC failed to write status: %v", e)
 		}
@@ -1062,6 +1078,8 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 			return err
 		}
 		if s, ok := status.FromError(err); ok {
+			s2, _ := json.Marshal(s)
+			fmt.Printf("Paul - %v - server.go:1082 - processUnaryRPC - s: %v\n", time.Now().String(), string(s2))
 			if e := t.WriteStatus(stream, s); e != nil {
 				grpclog.Warningf("grpc: Server.processUnaryRPC failed to write status: %v", e)
 			}
@@ -1103,6 +1121,8 @@ func (s *Server) processUnaryRPC(t transport.ServerTransport, stream *transport.
 	// TODO: Should we be logging if writing status failed here, like above?
 	// Should the logging be in WriteStatus?  Should we ignore the WriteStatus
 	// error or allow the stats handler to see it?
+	s2, _ := json.Marshal(statusOK)
+	fmt.Printf("Paul - %v - server.go:1125 - processUnaryRPC - statusOK: %v\n", time.Now().String(), string(s2))
 	err = t.WriteStatus(stream, statusOK)
 	if binlog != nil {
 		binlog.Log(&binarylog.ServerTrailer{
@@ -1205,6 +1225,8 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 		ss.decomp = encoding.GetCompressor(rc)
 		if ss.decomp == nil {
 			st := status.Newf(codes.Unimplemented, "grpc: Decompressor is not installed for grpc-encoding %q", rc)
+			s, _ := json.Marshal(st)
+			fmt.Printf("Paul - %v - server.go:1229 - processStreamingRPC - st: %v\n", time.Now().String(), string(s))
 			t.WriteStatus(ss.s, st)
 			return st.Err()
 		}
@@ -1255,6 +1277,8 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 			ss.trInfo.tr.SetError()
 			ss.mu.Unlock()
 		}
+		s, _ := json.Marshal(appStatus)
+		fmt.Printf("Paul - %v - server.go:1281 - processStreamingRPC - appStatus: %v\n", time.Now().String(), string(s))
 		t.WriteStatus(ss.s, appStatus)
 		if ss.binlog != nil {
 			ss.binlog.Log(&binarylog.ServerTrailer{
@@ -1270,6 +1294,8 @@ func (s *Server) processStreamingRPC(t transport.ServerTransport, stream *transp
 		ss.trInfo.tr.LazyLog(stringer("OK"), false)
 		ss.mu.Unlock()
 	}
+	s2, _ := json.Marshal(statusOK)
+	fmt.Printf("Paul - %v - server.go:1298 - processStreamingRPC - statusOK: %v\n", time.Now().String(), string(s2))
 	err = t.WriteStatus(ss.s, statusOK)
 	if ss.binlog != nil {
 		ss.binlog.Log(&binarylog.ServerTrailer{
@@ -1292,6 +1318,8 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 			trInfo.tr.SetError()
 		}
 		errDesc := fmt.Sprintf("malformed method name: %q", stream.Method())
+		s, _ := json.Marshal(status.New(codes.ResourceExhausted, errDesc))
+		fmt.Printf("Paul - %v - server.go:1322 - handleStream - st: %v\n", time.Now().String(), string(s))
 		if err := t.WriteStatus(stream, status.New(codes.ResourceExhausted, errDesc)); err != nil {
 			if trInfo != nil {
 				trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
@@ -1333,6 +1361,8 @@ func (s *Server) handleStream(t transport.ServerTransport, stream *transport.Str
 		trInfo.tr.LazyPrintf("%s", errDesc)
 		trInfo.tr.SetError()
 	}
+	s2, _ := json.Marshal(status.New(codes.Unimplemented, errDesc))
+	fmt.Printf("Paul - %v - server.go:1365 - handleStream - st: %v\n", time.Now().String(), string(s2))
 	if err := t.WriteStatus(stream, status.New(codes.Unimplemented, errDesc)); err != nil {
 		if trInfo != nil {
 			trInfo.tr.LazyLog(&fmtStringer{"%v", []interface{}{err}}, true)
@@ -1387,6 +1417,10 @@ func ServerTransportStreamFromContext(ctx context.Context) ServerTransportStream
 // pending RPCs on the client side will get notified by connection
 // errors.
 func (s *Server) Stop() {
+	s2, _ := json.Marshal(s)
+	fmt.Printf("Paul - %v - server.go:1400 - Stop - s: %v\n", time.Now().String(), string(s2))
+	fmt.Println("Paul - server.go:1402 - Stop - Stack Trace:")
+	debug.PrintStack()
 	s.quit.Fire()
 
 	defer func() {
