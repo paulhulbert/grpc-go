@@ -886,6 +886,7 @@ func (a *csAttempt) recvMsg(m interface{}, payInfo *payloadInfo) (err error) {
 	}
 	err = recv(a.p, cs.codec, a.s, a.dc, m, *cs.callInfo.maxReceiveMessageSize, payInfo, a.decomp)
 	if err != nil {
+		fmt.Printf("Stream recvMsg error: %+v\n", err)
 		if err == io.EOF {
 			if statusErr := a.s.Status().Err(); statusErr != nil {
 				return statusErr
@@ -1201,6 +1202,8 @@ func (as *addrConnStream) RecvMsg(m interface{}) (err error) {
 			as.finish(err)
 		}
 	}()
+
+	fmt.Printf("addrConnStream\n")
 
 	if !as.decompSet {
 		// Block until we receive headers containing received message encoding.

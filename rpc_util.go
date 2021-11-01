@@ -506,6 +506,7 @@ type parser struct {
 // error.
 func (p *parser) recvMsg(maxReceiveMessageSize int) (pf payloadFormat, msg []byte, err error) {
 	if _, err := p.r.Read(p.header[:]); err != nil {
+		fmt.Printf("recvMsg error 10: %+v\n", err)
 		return 0, nil, err
 	}
 
